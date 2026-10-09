@@ -207,6 +207,9 @@ img { display: block; width: 100%; object-fit: cover; }
 .secret-message { margin-top: 28px; padding-top: 24px; border-top: 1px dashed #dec4b9; }
 .secret-message h4 { font-size: 29px; margin-bottom: 12px; color: #9b625e; }
 .secret-signature { font-size: 23px; color: #9b625e; margin-top: 20px; }
+.balloon-again-button { display: inline-flex; align-items: center; gap: 8px; margin-top: 20px; padding: 10px 22px; border: 1px dashed #d4abb6; border-radius: 999px; background: transparent; color: #9b625e; font-family: 'Caveat', cursive; font-size: 17px; cursor: pointer; transition: background .25s ease, border-color .25s ease, transform .2s ease; }
+.balloon-again-button:hover { background: #f7e8ec; border-color: #c4909f; transform: translateY(-1px); }
+.balloon-again-button:active { transform: translateY(0) scale(.97); }
 .balloon-flight { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 30; }
 .floating-balloon { position: absolute; top: 100%; will-change: transform; animation: balloon-rise var(--duration) var(--delay) linear both; }
 .floating-balloon svg { display: block; width: 100%; height: auto; filter: drop-shadow(0 4px 5px #82554b15); }

@@ -2,10 +2,10 @@ export interface BirthdayPhoto { src: string; alt: string; caption: string; note
 
 // Personalize this file. Local paths point to files inside public/.
 export const birthday = {
-  fullName: 'Neyna Salma Shiqqy',
+  fullName: 'Neyna Salma Shidqy',
   nickname: 'Neyna',
-  siteTitle: 'Neyna Salma Shiqqy’s Birthday',
-  description: 'A birthday celebration for Neyna Salma Shiqqy, made with love by Novanni Indi Pradana.',
+  siteTitle: 'Neyna Salma Shidqy’s Birthday',
+  description: 'A birthday celebration for Neyna Salma Shidqy, made with love by Novanni Indi Pradana.',
   brand: 'Neyna’s Birthday',
   madeWithLove: 'made with love',
   forLabel: 'FOR',
@@ -57,7 +57,7 @@ export const birthday = {
     envelopeLabel: 'a letter for you', open: 'Open your letter', close: 'Tuck it away',
     salutation: 'My dearest Neyna,',
     paragraphs: [
-      'Happy birthday, Neyna Salma Shiqqy. Today, I want you to know how much there is to celebrate about you. Your presence matters, on this special day and on all the ordinary days in between.',
+      'Happy birthday, Neyna Salma Shidqy. Today, I want you to know how much there is to celebrate about you. Your presence matters, on this special day and on all the ordinary days in between.',
       'As a new year of your life begins, I wish you good health, a peaceful heart, and the courage to follow the things you dream of. May you find reasons to laugh a little louder, and people and places that make you feel truly at home.',
       'When the days feel heavy, please remember that you are allowed to rest. You do not have to be strong every moment or have everything figured out. You are worthy of love just as you are, in all the ways that make you wonderfully you.',
       'For today, let your worries wait. Enjoy the cake, the warm hugs, and every lovely wish that comes your way. I hope this birthday is the beginning of so many beautiful things for you. More than anything, I hope you feel how deeply you are loved.',
@@ -87,6 +87,7 @@ export const birthday = {
     secretTitle: 'My favorite part is you.',
     secretMessage: 'The popcorn, the silly photos, the helmets and rain jackets. What makes these little moments special is sharing them with you. For your birthday, I wish you all the love you bring into my life. Here’s to more pictures, more laughter, and more ordinary days that become our favorite memories.',
     signature: 'With you, even rainy days are worth keeping. ♡',
+    balloons: 'Release the balloons again ♡',
   },
   music: {
     enabled: true, provider: 'local' as 'spotify' | 'local', src: '/until i found you cover.mp3', volume: 0.35,
