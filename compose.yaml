@@ -1,0 +1,28 @@
+name: neyna-birthday
+
+services:
+  birthday:
+    image: neyna-birthday:latest
+    build: .
+    restart: unless-stopped
+    networks:
+      - traefik
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: "${TRAEFIK_NETWORK:?Set TRAEFIK_NETWORK in .env}"
+      traefik.http.routers.neyna-birthday.rule: "Host(`${BIRTHDAY_DOMAIN:?Set BIRTHDAY_DOMAIN in .env}`)"
+      traefik.http.routers.neyna-birthday.entrypoints: "${TRAEFIK_ENTRYPOINT:?Set TRAEFIK_ENTRYPOINT in .env}"
+      traefik.http.routers.neyna-birthday.service: "neyna-birthday"
+      traefik.http.services.neyna-birthday.loadbalancer.server.port: "80"
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+networks:
+  traefik:
+    external: true
+    name: "${TRAEFIK_NETWORK:?Set TRAEFIK_NETWORK in .env}"

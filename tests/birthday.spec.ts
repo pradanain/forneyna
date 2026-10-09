@@ -1,0 +1,177 @@
+import { test, expect, type Page } from '@playwright/test'
+import { mkdir } from 'node:fs/promises'
+import { birthday } from '../src/config/birthday'
+
+
+async function openSurprise(page: Page) {
+  await page.goto('/')
+  await page.getByRole('button', { name: birthday.intro.open, exact: true }).last().click()
+  await expect(page.getByRole('heading', { name: `${birthday.hero.title} ${birthday.hero.titleAccent}` })).toBeVisible()
+}
+
+test('complete surprise, gallery navigation and focus, letter, candles, replay', async ({ page }) => {
+  const errors: string[] = []
+  page.on('pageerror', error => errors.push(error.message))
+  await openSurprise(page)
+  const firstPhoto = page.getByRole('button', { name: `${birthday.gallery.openLabel}: ${birthday.gallery.photos[0].caption}`, exact: true })
+  await firstPhoto.click()
+  const modal = page.getByRole('dialog')
+  await expect(modal).toBeVisible()
+  await expect(modal.getByRole('heading')).toHaveText(birthday.gallery.photos[0].caption)
+  await expect(modal.locator('#lightbox-note')).toHaveText(birthday.gallery.photos[0].note)
+  await modal.getByRole('button', { name: birthday.lightbox.previous }).click()
+  await expect(modal.getByRole('heading')).toHaveText(birthday.gallery.photos[5].caption)
+  await modal.getByRole('button', { name: birthday.lightbox.next }).click()
+  await expect(modal.getByRole('heading')).toHaveText(birthday.gallery.photos[0].caption)
+  await page.keyboard.press('ArrowRight')
+  await expect(modal.getByRole('heading')).toHaveText(birthday.gallery.photos[1].caption)
+  await page.keyboard.press('ArrowLeft')
+  await expect(modal.getByRole('heading')).toHaveText(birthday.gallery.photos[0].caption)
+  for (let i = 0; i < 6; i++) {
+    await page.keyboard.press('Tab')
+    expect(await page.evaluate(() => !!document.activeElement?.closest('dialog'))).toBe(true)
+  }
+  await page.keyboard.press('Escape')
+  await expect(modal).not.toBeVisible()
+  await expect(firstPhoto).toBeFocused()
+  await firstPhoto.click()
+  await modal.getByRole('button', { name: birthday.lightbox.close }).click()
+  await expect(firstPhoto).toBeFocused()
+  await page.getByRole('button', { name: birthday.letter.open, exact: true }).last().click()
+  await expect(page.getByRole('article')).toContainText(birthday.letter.paragraphs[0])
+  await expect(page.getByRole('article').locator('.letter-vine')).toHaveCount(2)
+  await page.getByRole('button', { name: birthday.letter.close, exact: true }).last().click()
+  await expect(page.getByRole('article')).not.toBeVisible()
+  await page.getByRole('button', { name: birthday.letter.open, exact: true }).last().click()
+  await expect(page.getByRole('article')).toBeVisible()
+  await page.getByRole('button', { name: `${birthday.wish.candleLabel} 1`, exact: true }).click()
+  await expect(page.getByRole('button', { name: `${birthday.wish.extinguishedLabel} 1`, exact: true })).toHaveAttribute('aria-disabled', 'true')
+  await page.getByRole('button', { name: birthday.wish.blow, exact: true }).click()
+  await expect(page.getByRole('heading', { name: birthday.wish.successTitle })).toBeVisible()
+  await expect(page.getByRole('button', { name: birthday.wish.extinguishedLabel })).toHaveCount(3)
+  await page.getByRole('button', { name: birthday.wish.replay, exact: true }).click()
+  await expect(page.getByRole('heading', { name: `${birthday.intro.title} ${birthday.intro.titleAccent}` })).toBeVisible()
+  await expect(page.getByRole('dialog')).toHaveCount(0)
+  await expect(page.getByRole('button', { name: birthday.intro.open, exact: true }).first()).toBeFocused()
+  await page.getByRole('button', { name: birthday.intro.open, exact: true }).first().click()
+  await expect(page.getByRole('button', { name: birthday.wish.candleLabel })).toHaveCount(3)
+  await expect(page.getByRole('article')).toHaveCount(0)
+  expect(errors).toEqual([])
+})
+
+test('all candles can be extinguished individually', async ({ page }) => {
+  await openSurprise(page)
+  for (let i = 1; i <= 3; i++) await page.getByRole('button', { name: `${birthday.wish.candleLabel} ${i}`, exact: true }).click()
+  await expect(page.getByRole('heading', { name: birthday.wish.successTitle })).toBeVisible()
+  await expect(page.getByRole('button', { name: birthday.wish.blow, exact: true })).toHaveCount(0)
+  await expect(page.getByRole('heading', { name: birthday.surprise.title })).toBeVisible()
+})
+
+test('final surprise releases balloons upward, opens the secret, and resets on replay', async ({ page }, testInfo) => {
+  await openSurprise(page)
+  await expect(page.locator('.final-surprise')).toHaveCount(0)
+  await expect(page.locator('.balloon-flight')).toHaveCount(0)
+  await page.getByRole('button', { name: birthday.wish.blow, exact: true }).click()
+  await expect(page.getByRole('heading', { name: birthday.surprise.title })).toBeVisible()
+  const balloons = page.locator('.balloon-flight')
+  await expect(balloons).toHaveAttribute('aria-hidden', 'true')
+  await expect(balloons).toHaveCSS('pointer-events', 'none')
+  await expect(balloons.locator('.heart-balloon')).toHaveCount(6)
+  const first = page.locator('.floating-balloon').first()
+  const initialY = await first.evaluate(el => el.getBoundingClientRect().y)
+  await expect.poll(() => first.evaluate(el => el.getBoundingClientRect().y)).toBeLessThan(initialY - 80)
+  await page.getByRole('button', { name: birthday.surprise.open, exact: true }).press('Enter')
+  await expect(page.getByRole('heading', { name: birthday.surprise.secretTitle })).toBeFocused()
+  await expect(page.locator('#secret-message')).toContainText(birthday.surprise.secretMessage)
+  await page.locator('.final-surprise').scrollIntoViewIfNeeded()
+  await page.screenshot({ path: `artifacts/${testInfo.project.name}-final-surprise.png` })
+  await expect(balloons).toHaveCount(0, { timeout: 13000 })
+  await page.getByRole('button', { name: birthday.wish.replay, exact: true }).click()
+  await expect(page.locator('.final-surprise')).toHaveCount(0)
+  await page.getByRole('button', { name: birthday.intro.open, exact: true }).last().click()
+  await expect(page.locator('#birthday')).toBeVisible()
+  await expect(page.locator('#secret-message')).toHaveCount(0)
+})
+
+test('touch swipe navigates gallery in both directions', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile', 'Touch interaction is exercised on the mobile project.')
+  await openSurprise(page)
+  await page.getByRole('button', { name: `${birthday.gallery.openLabel}: ${birthday.gallery.photos[0].caption}`, exact: true }).click()
+  const figure = await page.getByRole('dialog').locator('figure').boundingBox()
+  expect(figure).not.toBeNull()
+  const y = figure!.y + 100
+  const left = figure!.x + 35
+  const right = figure!.x + figure!.width - 35
+  const touchSession = await page.context().newCDPSession(page)
+  await touchSession.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: right, y }] })
+  await touchSession.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: left, y }] })
+  await touchSession.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
+  await expect(page.getByRole('dialog').getByRole('heading')).toHaveText(birthday.gallery.photos[1].caption)
+  await touchSession.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: left, y }] })
+  await touchSession.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: right, y }] })
+  await touchSession.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
+  await expect(page.getByRole('dialog').getByRole('heading')).toHaveText(birthday.gallery.photos[0].caption)
+  await touchSession.detach()
+})
+
+
+test('reduced motion and 320px layout remain usable', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.setViewportSize({ width: 320, height: 740 })
+  await openSurprise(page)
+  await expect(page.locator('.cat-eyes')).toHaveCSS('animation-name', 'none')
+  await expect(page.locator('.cat-tail')).toHaveCSS('animation-name', 'none')
+  for (const id of ['surprise', 'birthday', 'little-things', 'letter', 'wish']) {
+    await page.locator(`#${id}`).scrollIntoViewIfNeeded()
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+  }
+  await page.getByRole('button', { name: birthday.letter.open, exact: true }).last().click()
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+  await page.getByRole('button', { name: birthday.wish.blow, exact: true }).click()
+  await expect(page.getByRole('heading', { name: birthday.wish.successTitle })).toBeVisible()
+  await expect(page.locator('canvas')).toHaveCount(0)
+  await expect(page.locator('.balloon-flight')).toHaveCount(0)
+  await page.getByRole('button', { name: birthday.surprise.open, exact: true }).click()
+  await expect(page.locator('#secret-message')).toContainText(birthday.surprise.secretMessage)
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+})
+
+test('birthday cat responds to touch and keyboard and resets with the surprise', async ({ page }, testInfo) => {
+  await openSurprise(page)
+  const cat = page.getByRole('button', { name: birthday.cat.label })
+  await expect(cat).toHaveAttribute('aria-expanded', 'false')
+  if (testInfo.project.name === 'mobile') await cat.tap()
+  else await cat.press('Enter')
+  await expect(cat).toHaveAttribute('aria-expanded', 'true')
+  await expect(page.locator('#cat-greeting')).toHaveText(birthday.cat.message)
+  await expect(page.locator('.cat-love')).toBeVisible()
+  await page.locator('.birthday-cat').screenshot({ path: `artifacts/${testInfo.project.name}-cat.png` })
+  await cat.press('Space')
+  await expect(page.locator('#cat-greeting')).toHaveText(birthday.cat.hint)
+  await page.getByRole('button', { name: birthday.wish.replay, exact: true }).click()
+  await page.getByRole('button', { name: birthday.intro.open, exact: true }).last().click()
+  await expect(cat).toHaveAttribute('aria-expanded', 'false')
+})
+
+test('screenshots for visual review', async ({ page }, testInfo) => {
+  await mkdir('artifacts', { recursive: true })
+  await page.goto('/')
+  await page.evaluate(() => document.fonts.ready)
+  await expect(page.locator('.intro-content')).toHaveCSS('opacity', '1')
+  await page.screenshot({ path: `artifacts/${testInfo.project.name}-gift.png`, fullPage: true })
+  await page.getByRole('button', { name: birthday.intro.open, exact: true }).last().click()
+  await expect(page.locator('#birthday')).toBeVisible()
+  for (const id of ['birthday', 'little-things', 'letter', 'wish']) await page.locator(`#${id}`).scrollIntoViewIfNeeded()
+  for (const reveal of await page.locator('.hero-photo-area, .hero-copy, .section-heading, .polaroid-grid > div, .cake-scene').all()) {
+    await reveal.scrollIntoViewIfNeeded()
+    await expect(reveal).toHaveCSS('opacity', '1')
+  }
+  await expect(page.locator('canvas')).toHaveCount(0, { timeout: 15000 })
+  await page.locator('#birthday').scrollIntoViewIfNeeded()
+  await page.screenshot({ path: `artifacts/${testInfo.project.name}-full.png`, fullPage: true, animations: 'disabled' })
+  await page.getByRole('button', { name: birthday.letter.open, exact: true }).last().click()
+  await page.getByRole('article').scrollIntoViewIfNeeded()
+  await page.screenshot({ path: `artifacts/${testInfo.project.name}-letter.png`, animations: 'disabled' })
+})
+
+
