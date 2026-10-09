@@ -23,7 +23,7 @@ try {
   const headers = path => docker(['exec', name, 'wget', '-S', '-O', '/dev/null', `http://127.0.0.1${path}`], true).output
   assert.equal(body('/healthz'), 'ok')
   const html = body('/')
-  assert.match(html, /<title>Neyna Salma Shiqqy’s Birthday<\/title>/)
+  assert.match(html, /<title>Neyna Salma Shidqy’s Birthday<\/title>/)
   assert.equal(body('/a-spa-route'), html)
   assert.match(headers('/'), /Cache-Control: no-cache/i)
   const asset = html.match(/src="(\/assets\/[^"]+\.js)"/)?.[1]

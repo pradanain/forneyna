@@ -90,7 +90,7 @@ export const birthday = {
     balloons: 'Release the balloons again ♡',
   },
   music: {
-    enabled: true, provider: 'local' as 'spotify' | 'local', src: '/until i found you cover.mp3', volume: 0.35,
+    enabled: true, provider: 'local' as 'spotify' | 'local', src: '/until i found you cover.mp3', volume: 0.7,
     autoPlayOnLoad: true, autoPlayOnOpen: true,
     play: 'Play music', pause: 'Pause music', label: 'A little melody for you',
     unavailable: 'The music is not available yet. Your surprise is still here to enjoy.',

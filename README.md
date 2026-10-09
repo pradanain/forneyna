@@ -1,6 +1,6 @@
-# Neyna Salma Shiqqy Birthday
+# Neyna Salma Shidqy Birthday
 
-Website kejutan ulang tahun untuk **Neyna Salma Shiqqy**, dengan seluruh teks pengalaman dalam bahasa Inggris. React + TypeScript + Vite + Tailwind CSS, Motion for React, lucide-react, dan canvas-confetti. Gambar, font, dan musik disajikan lokal. Tidak membutuhkan database atau backend. Musik memakai file cover MP3 pengguna dan mencoba autoplay sejak halaman dimuat; jika browser memblokir audio, klik/tap/keyboard pertama di halaman memulainya.
+Website kejutan ulang tahun untuk **Neyna Salma Shidqy**, dengan seluruh teks pengalaman dalam bahasa Inggris. React + TypeScript + Vite + Tailwind CSS, Motion for React, lucide-react, dan canvas-confetti. Gambar, font, dan musik disajikan lokal. Tidak membutuhkan database atau backend. Musik memakai file cover MP3 pengguna dan mencoba autoplay sejak halaman dimuat; jika browser memblokir audio, klik/tap/keyboard pertama di halaman memulainya.
 
 ## Menjalankan lokal
 

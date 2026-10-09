@@ -6,7 +6,7 @@ Persiapan deploy Linux: Compose kini memiliki nama proyek `neyna-birthday` dan i
 
 Pembaruan dekorasi: kucing SVG interaktif di dekat kue, dengan kedipan, gerakan ekor, dan sapaan saat disentuh atau diaktifkan lewat keyboard. Surat memiliki bunga dan daun rambat di dua sudut. Enam dari 18 balon kejutan kini berbentuk hati. Animasi kucing mengikuti reduced motion.
 
-Pembaruan identitas: judul tab menjadi Neyna Salma Shiqqy’s Birthday, header menjadi Neyna’s Birthday dengan nama lengkap, serta surat dan footer mencantumkan Novanni Indi Pradana. Lint, typecheck/build, dan 6 tes browser terkait alur lengkap, layout 320 px, dan screenshot mobile/desktop lulus pada pembaruan ini. Suite lengkap di bawah sudah diperbarui setelah penambahan dekorasi.
+Pembaruan identitas: judul tab menjadi Neyna Salma Shidqy’s Birthday, header menjadi Neyna’s Birthday dengan nama lengkap, serta surat dan footer mencantumkan Novanni Indi Pradana. Lint, typecheck/build, dan 6 tes browser terkait alur lengkap, layout 320 px, dan screenshot mobile/desktop lulus pada pembaruan ini. Suite lengkap di bawah sudah diperbarui setelah penambahan dekorasi.
 
 Pembaruan kejutan: catatan enam foto kini mengikuti detail foto pengguna. Setelah semua lilin padam, kartu pesan rahasia dan 18 balon pastel muncul; balon bergerak dari bawah ke atas dan dibersihkan setelah 12 detik. Animasi menghormati reduced motion dan tidak menghalangi klik.
 
